@@ -17,8 +17,13 @@ public class Ball : MonoBehaviour
 
     private void Start()
     {
-        InitialPush();
         GameManager.Instance.OnReset += GameManager_OnReset;
+        GameManager.Instance.gameUI.OnStartGame += GameManager_OnStartGame;
+    }
+
+    private void GameManager_OnStartGame()
+    {
+        InitialPush();
     }
 
     private void GameManager_OnReset()

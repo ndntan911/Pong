@@ -5,8 +5,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     private int scorePlayer1, scorePlayer2;
-    [SerializeField] private ScoreText scoreTextLeft, scoreTextRight;
     public Action OnReset;
+    [SerializeField] public GameUI gameUI;
+    private int maxScore = 4;
 
     private void Awake()
     {
@@ -20,9 +21,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        gameUI.OnStartGame += GameUI_OnStartGame;
+    }
+
+    private void OnDestroy()
+    {
+        gameUI.OnStartGame -= GameUI_OnStartGame;
+    }
+
+    private void GameUI_OnStartGame()
+    {
+        scorePlayer1 = 0;
+        scorePlayer2 = 0;
+        gameUI.UpdateScores(scorePlayer1, scorePlayer2);
+    }
+
     public void OnScoreZoneReached(int id)
     {
-        OnReset?.Invoke();
 
         if (id == 1)
         {
@@ -33,12 +50,24 @@ public class GameManager : MonoBehaviour
             scorePlayer2++;
         }
 
-        UpdateScores();
+        gameUI.UpdateScores(scorePlayer1, scorePlayer2);
+        gameUI.HighlightScore(id);
+
+        CheckWin();
     }
 
-    private void UpdateScores()
+    private void CheckWin()
     {
-        scoreTextLeft.SetScore(scorePlayer1);
-        scoreTextRight.SetScore(scorePlayer2);
+        int winnerId = scorePlayer1 == maxScore ? 1 : scorePlayer2 == maxScore ? 2 : 0;
+
+        if (winnerId != 0)
+        {
+            gameUI.OnGameEnds(winnerId);
+        }
+        else
+        {
+            OnReset?.Invoke();
+
+        }
     }
 }
