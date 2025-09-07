@@ -8,6 +8,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private float moveSpeed = 1f;
     private float startX = 0f;
     private float maxStartY = 4f;
+    [SerializeField] private float speedMultiplier = 1.1f;
 
     private void Awake()
     {
@@ -16,6 +17,13 @@ public class Ball : MonoBehaviour
 
     private void Start()
     {
+        InitialPush();
+        GameManager.Instance.OnReset += GameManager_OnReset;
+    }
+
+    private void GameManager_OnReset()
+    {
+        ResetBallPosition();
         InitialPush();
     }
 
@@ -27,7 +35,7 @@ public class Ball : MonoBehaviour
         rb2D.linearVelocity = dir * moveSpeed;
     }
 
-    private void ResetBall()
+    private void ResetBallPosition()
     {
         float positionY = Random.Range(-maxStartY, maxStartY);
         Vector2 position = new Vector2(startX, positionY);
@@ -39,8 +47,14 @@ public class Ball : MonoBehaviour
         if (collision.gameObject.TryGetComponent(out ScoreZone scoreZone))
         {
             GameManager.Instance.OnScoreZoneReached(scoreZone.id);
-            ResetBall();
-            InitialPush();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.TryGetComponent(out Paddle paddle))
+        {
+            rb2D.linearVelocity *= speedMultiplier;
         }
     }
 }

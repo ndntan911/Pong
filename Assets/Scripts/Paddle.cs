@@ -5,10 +5,22 @@ public class Paddle : MonoBehaviour
     private Rigidbody2D rb2D;
     [SerializeField] private int id;
     [SerializeField] private float moveSpeed = 2f;
+    private Vector3 startPosition;
 
     private void Awake()
     {
         rb2D = GetComponent<Rigidbody2D>();
+    }
+
+    private void Start()
+    {
+        startPosition = transform.position;
+        GameManager.Instance.OnReset += GameManager_OnReset;
+    }
+
+    private void GameManager_OnReset()
+    {
+        transform.position = startPosition;
     }
 
     private void Update()
