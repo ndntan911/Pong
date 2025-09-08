@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public Action OnReset;
     [SerializeField] public GameUI gameUI;
     private int maxScore = 4;
+    public GameAudio gameAudio;
 
     private void Awake()
     {
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        gameAudio = GetComponent<GameAudio>();
     }
 
     private void Start()
@@ -36,6 +39,7 @@ public class GameManager : MonoBehaviour
         scorePlayer1 = 0;
         scorePlayer2 = 0;
         gameUI.UpdateScores(scorePlayer1, scorePlayer2);
+        OnReset?.Invoke();
     }
 
     public void OnScoreZoneReached(int id)
@@ -63,10 +67,12 @@ public class GameManager : MonoBehaviour
         if (winnerId != 0)
         {
             gameUI.OnGameEnds(winnerId);
+            gameAudio.PlayWinSound();
         }
         else
         {
             OnReset?.Invoke();
+            gameAudio.PlayScoreSound();
 
         }
     }

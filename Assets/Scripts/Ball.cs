@@ -9,6 +9,7 @@ public class Ball : MonoBehaviour
     private float startX = 0f;
     private float maxStartY = 4f;
     [SerializeField] private float speedMultiplier = 1.1f;
+    [SerializeField] private BallAudio ballAudio;
 
     private void Awake()
     {
@@ -60,6 +61,12 @@ public class Ball : MonoBehaviour
         if (collision.gameObject.TryGetComponent(out Paddle paddle))
         {
             rb2D.linearVelocity *= speedMultiplier;
+            ballAudio.PlayPaddleSound();
+        }
+
+        if (collision.gameObject.TryGetComponent(out Wall wall))
+        {
+            ballAudio.PlayWallSound();
         }
     }
 }
