@@ -6,6 +6,9 @@ public class Paddle : MonoBehaviour
     [SerializeField] private int id;
     [SerializeField] private float moveSpeed = 2f;
     private Vector3 startPosition;
+    public float AIDeadzone = 1f;
+    int direction = 0;
+    private float moveSpeedMultiplier = 1f;
 
     private void Awake()
     {
@@ -25,8 +28,40 @@ public class Paddle : MonoBehaviour
 
     private void Update()
     {
-        float movement = ProcessInput();
-        Move(movement);
+        if (IsAI())
+        {
+            MoveAI();
+        }
+        else
+        {
+
+            float movement = ProcessInput();
+            Move(movement);
+        }
+    }
+
+    private bool IsAI()
+    {
+        bool IsPlayer1AI = id == 1 && GameManager.Instance.IsPlayer1AI();
+        bool IsPlayer2AI = id == 2 && GameManager.Instance.IsPlayer2AI();
+        return IsPlayer1AI || IsPlayer2AI;
+    }
+
+    private void MoveAI()
+    {
+        Vector2 ballPos = GameManager.Instance.ball.transform.position;
+
+        if (Mathf.Abs(ballPos.y - transform.position.y) > AIDeadzone)
+        {
+            direction = ballPos.y > transform.position.y ? 1 : -1;
+        }
+
+        if (Random.value < 0.01f)
+        {
+            moveSpeedMultiplier = Random.Range(0.5f, 1.5f);
+        }
+
+        Move(direction);
     }
 
     private float ProcessInput()
@@ -49,8 +84,10 @@ public class Paddle : MonoBehaviour
     {
         Vector2 velocity = rb2D.linearVelocity;
 
-        velocity.y = movement * moveSpeed;
+        velocity.y = movement * moveSpeed * moveSpeedMultiplier;
 
         rb2D.linearVelocity = velocity;
     }
+
+
 }

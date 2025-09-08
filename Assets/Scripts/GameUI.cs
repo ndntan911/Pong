@@ -8,7 +8,13 @@ public class GameUI : MonoBehaviour
     [SerializeField] private GameObject menuUI;
     [SerializeField] private TextMeshProUGUI winText;
     [SerializeField] private TextMeshProUGUI volumeValueText;
+    [SerializeField] private TextMeshProUGUI playModeButtonText;
     public Action OnStartGame;
+
+    private void Start()
+    {
+        AdjustPlayModeButtonText();
+    }
 
     public void UpdateScores(int scorePlayer1, int scorePlayer2)
     {
@@ -44,5 +50,31 @@ public class GameUI : MonoBehaviour
     {
         AudioListener.volume = value;
         volumeValueText.text = $"{Mathf.RoundToInt(value * 100)}%";
+    }
+
+    public void OnSwitchPlayModeButtonClicked()
+    {
+        GameManager.Instance.SwitchPlayMode();
+        AdjustPlayModeButtonText();
+    }
+
+    private void AdjustPlayModeButtonText()
+    {
+        string s = string.Empty;
+
+        switch (GameManager.Instance.playMode)
+        {
+            case GameManager.PlayMode.PlayerVsPlayer:
+                s = "2 Players";
+                break;
+            case GameManager.PlayMode.PlayerVsAI:
+                s = "Player vs AI";
+                break;
+            case GameManager.PlayMode.AIvsAI:
+                s = "AI vs AI";
+                break;
+        }
+
+        playModeButtonText.text = s;
     }
 }

@@ -10,6 +10,14 @@ public class GameManager : MonoBehaviour
     private int maxScore = 4;
     public GameAudio gameAudio;
     public Shake screenShake;
+    public PlayMode playMode;
+    public Ball ball;
+    public enum PlayMode
+    {
+        PlayerVsPlayer,
+        PlayerVsAI,
+        AIvsAI
+    }
 
     private void Awake()
     {
@@ -76,5 +84,31 @@ public class GameManager : MonoBehaviour
             gameAudio.PlayScoreSound();
 
         }
+    }
+
+    public void SwitchPlayMode()
+    {
+        switch (playMode)
+        {
+            case PlayMode.PlayerVsPlayer:
+                playMode = PlayMode.PlayerVsAI;
+                break;
+            case PlayMode.PlayerVsAI:
+                playMode = PlayMode.AIvsAI;
+                break;
+            case PlayMode.AIvsAI:
+                playMode = PlayMode.PlayerVsPlayer;
+                break;
+        }
+    }
+
+    public bool IsPlayer2AI()
+    {
+        return playMode == PlayMode.PlayerVsAI || playMode == PlayMode.AIvsAI;
+    }
+
+    public bool IsPlayer1AI()
+    {
+        return playMode == PlayMode.AIvsAI;
     }
 }
