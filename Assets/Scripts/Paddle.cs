@@ -90,4 +90,8 @@ public class Paddle : MonoBehaviour
     }
 
 
+    public bool IsLeftPaddle()
+    {
+        return id == 1;
+    }
 }
