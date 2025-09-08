@@ -10,6 +10,7 @@ public class Ball : MonoBehaviour
     private float maxStartY = 4f;
     [SerializeField] private float speedMultiplier = 1.1f;
     [SerializeField] private BallAudio ballAudio;
+    [SerializeField] private ParticleSystem collisionParticle;
 
     private void Awake()
     {
@@ -19,12 +20,6 @@ public class Ball : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnReset += GameManager_OnReset;
-        GameManager.Instance.gameUI.OnStartGame += GameManager_OnStartGame;
-    }
-
-    private void GameManager_OnStartGame()
-    {
-        InitialPush();
     }
 
     private void GameManager_OnReset()
@@ -39,6 +34,8 @@ public class Ball : MonoBehaviour
 
         dir.y = Random.Range(-maxInitialAngle, maxInitialAngle);
         rb2D.linearVelocity = dir * moveSpeed;
+
+        EmitParticle(32);
     }
 
     private void ResetBallPosition()
@@ -53,6 +50,7 @@ public class Ball : MonoBehaviour
         if (collision.gameObject.TryGetComponent(out ScoreZone scoreZone))
         {
             GameManager.Instance.OnScoreZoneReached(scoreZone.id);
+            GameManager.Instance.screenShake.StartShake(0.33f, 0.1f);
         }
     }
 
@@ -62,11 +60,20 @@ public class Ball : MonoBehaviour
         {
             rb2D.linearVelocity *= speedMultiplier;
             ballAudio.PlayPaddleSound();
+            EmitParticle(16);
+            GameManager.Instance.screenShake.StartShake(Mathf.Sqrt(rb2D.linearVelocity.magnitude) * 0.02f, 0.05f);
         }
 
         if (collision.gameObject.TryGetComponent(out Wall wall))
         {
             ballAudio.PlayWallSound();
+            EmitParticle(8);
+            GameManager.Instance.screenShake.StartShake(0.033f, 0.033f);
         }
+    }
+
+    private void EmitParticle(int amount)
+    {
+        collisionParticle.Emit(amount);
     }
 }

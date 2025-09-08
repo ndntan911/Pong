@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public GameUI gameUI;
     private int maxScore = 4;
     public GameAudio gameAudio;
+    public Shake screenShake;
 
     private void Awake()
     {
